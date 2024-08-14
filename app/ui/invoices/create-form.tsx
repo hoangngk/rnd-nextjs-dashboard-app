@@ -17,6 +17,9 @@ export default function Form({ onCancel }: { onCancel: () => void }) {
   const initialState: State = { message: null, errors: {} };
 
   const [state, formAction] = useActionState(createInvoice, initialState);
+  console.log('state', state);
+  
+
 
   return (
     <form action={formAction} className='bg-white p-4 md:p-6'>

@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 export type State = {
@@ -53,10 +54,14 @@ export async function createInvoice(prevState: State | undefined, formData: Form
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
     `;
   } catch (error) {
+    console.log('error', error);
+    
     return { message: 'Database Error: Failed to Create Invoice.' };
   }
 
   revalidatePath('/dashboard/invoices');
+
+  return { message: 'Created Invoice.' };
 }
 
 export async function updateInvoice(id: string, formData: FormData) {
@@ -68,6 +73,9 @@ export async function updateInvoice(id: string, formData: FormData) {
     status: rawData.status,
   });
 
+  console.log('rawData', rawData);
+  
+
   const amountInCents = amount * 100;
 
   try {
@@ -77,10 +85,14 @@ export async function updateInvoice(id: string, formData: FormData) {
         WHERE id = ${id}
       `;
   } catch (error) {
+    console.log('error', error);
     return { message: 'Database Error: Failed to Update Invoice.' };
   }
 
+  console.log('updated invoice');
+  
   revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
@@ -91,6 +103,4 @@ export async function deleteInvoice(id: string) {
   } catch (error) {
     return { message: 'Database Error: Failed to Delete Invoice.' };
   }
-
-  revalidatePath('/dashboard/invoices');
 }
